@@ -112,7 +112,7 @@ type RunnerSpec struct {
 	Artifacts *[]string `json:"artifacts,omitempty"`
 
 	// Container Test-runner container specification.
-	Container *ContainerSpec `json:"container,omitempty"`
+	Container ContainerSpec `json:"container"`
 
 	// Entrypoint Command used to run tests.
 	Entrypoint *string `json:"entrypoint,omitempty"`
