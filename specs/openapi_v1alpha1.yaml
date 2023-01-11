@@ -137,7 +137,7 @@ components:
           type: array
           description: List of environment variables.
           items:
-            "$ref": "#/components/schemas/EnvItem"
+            "$ref": "#/components/schemas/EnvVar"
         files:
           type: array
           description: Test Runner container-mounted files.
@@ -166,9 +166,9 @@ components:
           type: string
           description: Base64-encoded configuration file.
           example: base64string==
-    EnvItem:
+    EnvVar:
       type: object
-      description: Environment variable item.
+      description: Environment variable.
       required:
         - name
         - value

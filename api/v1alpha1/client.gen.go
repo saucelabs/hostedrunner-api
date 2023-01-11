@@ -25,8 +25,8 @@ type ContainerSpec struct {
 	Name string `json:"name"`
 }
 
-// EnvItem Environment variable item.
-type EnvItem struct {
+// EnvVar Environment variable.
+type EnvVar struct {
 	// Name Environment variable name.
 	Name string `json:"name"`
 
@@ -118,7 +118,7 @@ type RunnerSpec struct {
 	Entrypoint *string `json:"entrypoint,omitempty"`
 
 	// Env List of environment variables.
-	Env *[]EnvItem `json:"env,omitempty"`
+	Env *[]EnvVar `json:"env,omitempty"`
 
 	// Files Test Runner container-mounted files.
 	Files *[]File `json:"files,omitempty"`

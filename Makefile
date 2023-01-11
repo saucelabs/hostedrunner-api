@@ -30,6 +30,13 @@ else
 	echo $(OAPI_CODEGEN_FOUND)
 endif
 
+TIDIED_FOUND := $(shell tidied --help 2> /dev/null)
+.PHONY: install_tidied
+install_tidied:
+ifndef TIDIED_FOUND
+	go install gitlab.com/jamietanna/tidied@latest
+endif
+
 GOLANGCI_LINT_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh"
 .PHONY: golangci
 golangci: $(GOLANGCI)
@@ -52,3 +59,12 @@ fmt: golangci generate
 lint: golangci generate ## Lint
 	$(GOLANGCI) run -v -c .golangci.yml ./...
 .PHONY: lint
+
+tidied: install_tidied ## Check for no untracked files
+	tidied -verbose
+.PHONY: tidied
+
+untracked: generate ## Check for no untracked files
+	git status
+	git diff-index --quiet HEAD --
+.PHONY: untracked
