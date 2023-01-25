@@ -127,6 +127,15 @@ type RunnerSpec struct {
 	Metadata *RunnerMetadata `json:"metadata,omitempty"`
 }
 
+// RunnerStatus defines model for RunnerStatus.
+type RunnerStatus struct {
+	CreationTime      int64   `json:"creation_time"`
+	Id                string  `json:"id"`
+	Status            string  `json:"status"`
+	TerminationReason *string `json:"termination_reason,omitempty"`
+	TerminationTime   *int64  `json:"termination_time,omitempty"`
+}
+
 // GetHostedImageRunnersParams defines parameters for GetHostedImageRunners.
 type GetHostedImageRunnersParams struct {
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
@@ -222,6 +231,12 @@ type ClientInterface interface {
 
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetHostedImageRunnersIdSpec request
+	GetHostedImageRunnersIdSpec(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetHostedImageRunnersIdStatus request
+	GetHostedImageRunnersIdStatus(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *HostedAPIClient) GetHostedImageRunners(ctx context.Context, params *GetHostedImageRunnersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -274,6 +289,30 @@ func (c *HostedAPIClient) DeleteHostedImageRunnersId(ctx context.Context, id str
 
 func (c *HostedAPIClient) GetHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetHostedImageRunnersIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *HostedAPIClient) GetHostedImageRunnersIdSpec(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHostedImageRunnersIdSpecRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *HostedAPIClient) GetHostedImageRunnersIdStatus(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHostedImageRunnersIdStatusRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -455,6 +494,74 @@ func NewGetHostedImageRunnersIdRequest(server string, id string) (*http.Request,
 	return req, nil
 }
 
+// NewGetHostedImageRunnersIdSpecRequest generates requests for GetHostedImageRunnersIdSpec
+func NewGetHostedImageRunnersIdSpecRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/hosted/image/runners/%s/spec", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetHostedImageRunnersIdStatusRequest generates requests for GetHostedImageRunnersIdStatus
+func NewGetHostedImageRunnersIdStatusRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/hosted/image/runners/%s/status", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *HostedAPIClient) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -511,6 +618,12 @@ type ClientWithResponsesInterface interface {
 
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdResponse, error)
+
+	// GetHostedImageRunnersIdSpec request
+	GetHostedImageRunnersIdSpecWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdSpecResponse, error)
+
+	// GetHostedImageRunnersIdStatus request
+	GetHostedImageRunnersIdStatusWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdStatusResponse, error)
 }
 
 type GetHostedImageRunnersResponse struct {
@@ -601,6 +714,50 @@ func (r GetHostedImageRunnersIdResponse) StatusCode() int {
 	return 0
 }
 
+type GetHostedImageRunnersIdSpecResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RunnerDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHostedImageRunnersIdSpecResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHostedImageRunnersIdSpecResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetHostedImageRunnersIdStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RunnerStatus
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHostedImageRunnersIdStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHostedImageRunnersIdStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // GetHostedImageRunnersWithResponse request returning *GetHostedImageRunnersResponse
 func (c *ClientWithResponses) GetHostedImageRunnersWithResponse(ctx context.Context, params *GetHostedImageRunnersParams, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersResponse, error) {
 	rsp, err := c.GetHostedImageRunners(ctx, params, reqEditors...)
@@ -643,6 +800,24 @@ func (c *ClientWithResponses) GetHostedImageRunnersIdWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetHostedImageRunnersIdResponse(rsp)
+}
+
+// GetHostedImageRunnersIdSpecWithResponse request returning *GetHostedImageRunnersIdSpecResponse
+func (c *ClientWithResponses) GetHostedImageRunnersIdSpecWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdSpecResponse, error) {
+	rsp, err := c.GetHostedImageRunnersIdSpec(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHostedImageRunnersIdSpecResponse(rsp)
+}
+
+// GetHostedImageRunnersIdStatusWithResponse request returning *GetHostedImageRunnersIdStatusResponse
+func (c *ClientWithResponses) GetHostedImageRunnersIdStatusWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdStatusResponse, error) {
+	rsp, err := c.GetHostedImageRunnersIdStatus(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHostedImageRunnersIdStatusResponse(rsp)
 }
 
 // ParseGetHostedImageRunnersResponse parses an HTTP response from a GetHostedImageRunnersWithResponse call
@@ -736,6 +911,58 @@ func ParseGetHostedImageRunnersIdResponse(rsp *http.Response) (*GetHostedImageRu
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest RunnerDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetHostedImageRunnersIdSpecResponse parses an HTTP response from a GetHostedImageRunnersIdSpecWithResponse call
+func ParseGetHostedImageRunnersIdSpecResponse(rsp *http.Response) (*GetHostedImageRunnersIdSpecResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHostedImageRunnersIdSpecResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RunnerDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetHostedImageRunnersIdStatusResponse parses an HTTP response from a GetHostedImageRunnersIdStatusWithResponse call
+func ParseGetHostedImageRunnersIdStatusResponse(rsp *http.Response) (*GetHostedImageRunnersIdStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHostedImageRunnersIdStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RunnerStatus
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

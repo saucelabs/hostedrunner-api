@@ -98,6 +98,44 @@ paths:
       responses:
         '204':
           description: Test-runner is terminated.
+  /hosted/image/runners/{id}/status:
+    get:
+      summary: Get the hosted test-runner status.
+      tags:
+        - image
+      parameters:
+        - name: id
+          in: path
+          description: Runner ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test-runner status.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RunnerStatus"
+  /hosted/image/runners/{id}/spec:
+    get:
+      summary: Get the hosted test-runner spec.
+      tags:
+        - image
+      parameters:
+        - name: id
+          in: path
+          description: Runner ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test-runner spec.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunnerDetails"
 components:
   schemas:
     ContainerSpec:
@@ -231,6 +269,25 @@ components:
           description: A List of test-runners.
           items:
             "$ref": "#/components/schemas/Runner"
+    RunnerStatus:
+      type: object
+      required:
+        - id
+        - status
+        - creation_time
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        creation_time:
+          type: integer
+          format: int64
+        termination_time:
+          type: integer
+          format: int64
+        termination_reason:
+          type: string
     RunnerDetails:
       type: object
       allOf:
