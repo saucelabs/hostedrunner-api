@@ -14,7 +14,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: v1alpha1
+  - url: /v1alpha1
 paths:
   /hosted/image/runners:
     post:
@@ -136,6 +136,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RunnerDetails"
+  /hosted/image/runners/{id}/logs/url:
+    get:
+      summary: Get url to fetch test-runner's logs.
+      tags:
+        - image
+        - artifacts
+      parameters:
+        - name: id
+          in: path
+          description: Runner ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: URL to fetch test-runner's logs.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunnerLogsUrl"
 components:
   schemas:
     ContainerSpec:
@@ -146,17 +166,20 @@ components:
       properties:
         name:
           type: string
+          minLength: 3
           example: saucelabs/image:sha1
         auth:
           type: object
           required:
             - user
-            - password
+            - token
           properties:
             user:
               type: string
+              minLength: 2
             token:
               type: string
+              minLength: 2
     RunnerSpec:
       type: object
       description: Test-runner specification.
@@ -213,6 +236,7 @@ components:
       properties:
         name:
           type: string
+          pattern: '^[a-zA-Z][a-zA-Z0-9].+'
           description: Environment variable name.
           example: FOO
         value:
@@ -233,6 +257,7 @@ components:
         - status
         - image
         - creation_time
+        - assets_uploaded
       properties:
         id:
           type: string
@@ -259,6 +284,9 @@ components:
         termination_reason:
           type: string
           description: a code describing why the test terminated
+        assets_uploaded:
+          type: boolean
+          description: a flag indicating assets upload status
     RunnerList:
       type: object
       required:
@@ -275,6 +303,7 @@ components:
         - id
         - status
         - creation_time
+        - assets_uploaded
       properties:
         id:
           type: string
@@ -288,6 +317,8 @@ components:
           format: int64
         termination_reason:
           type: string
+        assets_uploaded:
+          type: boolean
     RunnerDetails:
       type: object
       allOf:
@@ -296,6 +327,13 @@ components:
           properties:
               metadata:
                 $ref: "#/components/schemas/RunnerMetadata"
+    RunnerLogsUrl:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
     Error:
       type: object
       description: Generic error
