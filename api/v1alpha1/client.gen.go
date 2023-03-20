@@ -693,7 +693,7 @@ type ClientWithResponsesInterface interface {
 type GetHostedImageRunnersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *RunnerList
+	JSON200      *RunnerList
 }
 
 // Status returns HTTPResponse.Status
@@ -929,12 +929,12 @@ func ParseGetHostedImageRunnersResponse(rsp *http.Response) (*GetHostedImageRunn
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest RunnerList
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON201 = &dest
+		response.JSON200 = &dest
 
 	}
 

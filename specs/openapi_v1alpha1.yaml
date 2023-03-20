@@ -59,7 +59,7 @@ paths:
             minimum: 0
             default: 0
       responses:
-        '201':
+        '200':
           description: Successful operation. List of runners.
           content:
             application/json:
