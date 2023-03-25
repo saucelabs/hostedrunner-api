@@ -156,6 +156,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RunnerLogsUrl"
+  /hosted/image/runners/{id}/artifacts/url:
+    get:
+      summary: Get url to fetch test-runner's artifacts.
+      tags:
+        - image
+        - artifacts
+      parameters:
+        - name: id
+          in: path
+          description: Runner ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: URL to fetch test-runner's artifacts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunnerArtifactsUrl"
 components:
   schemas:
     ContainerSpec:
@@ -169,17 +189,19 @@ components:
           minLength: 3
           example: saucelabs/image:sha1
         auth:
-          type: object
-          required:
-            - user
-            - token
-          properties:
-            user:
-              type: string
-              minLength: 2
-            token:
-              type: string
-              minLength: 2
+         $ref: "#/components/schemas/Auth"
+    Auth:
+      type: object
+      required:
+        - user
+        - token
+      properties:
+        user:
+          type: string
+          minLength: 2
+        token:
+          type: string
+          minLength: 2
     RunnerSpec:
       type: object
       description: Test-runner specification.
@@ -236,7 +258,7 @@ components:
       properties:
         name:
           type: string
-          pattern: '^[a-zA-Z][a-zA-Z0-9].+'
+          pattern: '^[a-zA-Z_][a-zA-Z0-9_].+'
           description: Environment variable name.
           example: FOO
         value:
@@ -328,6 +350,13 @@ components:
               metadata:
                 $ref: "#/components/schemas/RunnerMetadata"
     RunnerLogsUrl:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+    RunnerArtifactsUrl:
       type: object
       required:
         - url

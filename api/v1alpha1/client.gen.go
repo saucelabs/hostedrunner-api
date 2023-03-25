@@ -16,12 +16,15 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
 
+// Auth defines model for Auth.
+type Auth struct {
+	Token string `json:"token"`
+	User  string `json:"user"`
+}
+
 // ContainerSpec Test-runner container specification.
 type ContainerSpec struct {
-	Auth *struct {
-		Token string `json:"token"`
-		User  string `json:"user"`
-	} `json:"auth,omitempty"`
+	Auth *Auth  `json:"auth,omitempty"`
 	Name string `json:"name"`
 }
 
@@ -74,6 +77,11 @@ type Runner struct {
 
 	// TerminationTime Test-runner execution termination time.
 	TerminationTime *int64 `json:"termination_time,omitempty"`
+}
+
+// RunnerArtifactsUrl defines model for RunnerArtifactsUrl.
+type RunnerArtifactsUrl struct {
+	Url string `json:"url"`
 }
 
 // RunnerDetails defines model for RunnerDetails.
@@ -244,6 +252,9 @@ type ClientInterface interface {
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetHostedImageRunnersIdArtifactsUrl request
+	GetHostedImageRunnersIdArtifactsUrl(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetHostedImageRunnersIdLogsUrl request
 	GetHostedImageRunnersIdLogsUrl(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -304,6 +315,18 @@ func (c *HostedAPIClient) DeleteHostedImageRunnersId(ctx context.Context, id str
 
 func (c *HostedAPIClient) GetHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetHostedImageRunnersIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *HostedAPIClient) GetHostedImageRunnersIdArtifactsUrl(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHostedImageRunnersIdArtifactsUrlRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -521,6 +544,40 @@ func NewGetHostedImageRunnersIdRequest(server string, id string) (*http.Request,
 	return req, nil
 }
 
+// NewGetHostedImageRunnersIdArtifactsUrlRequest generates requests for GetHostedImageRunnersIdArtifactsUrl
+func NewGetHostedImageRunnersIdArtifactsUrlRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/hosted/image/runners/%s/artifacts/url", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetHostedImageRunnersIdLogsUrlRequest generates requests for GetHostedImageRunnersIdLogsUrl
 func NewGetHostedImageRunnersIdLogsUrlRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -680,6 +737,9 @@ type ClientWithResponsesInterface interface {
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdResponse, error)
 
+	// GetHostedImageRunnersIdArtifactsUrl request
+	GetHostedImageRunnersIdArtifactsUrlWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdArtifactsUrlResponse, error)
+
 	// GetHostedImageRunnersIdLogsUrl request
 	GetHostedImageRunnersIdLogsUrlWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdLogsUrlResponse, error)
 
@@ -772,6 +832,28 @@ func (r GetHostedImageRunnersIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetHostedImageRunnersIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetHostedImageRunnersIdArtifactsUrlResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RunnerArtifactsUrl
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHostedImageRunnersIdArtifactsUrlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHostedImageRunnersIdArtifactsUrlResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -886,6 +968,15 @@ func (c *ClientWithResponses) GetHostedImageRunnersIdWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetHostedImageRunnersIdResponse(rsp)
+}
+
+// GetHostedImageRunnersIdArtifactsUrlWithResponse request returning *GetHostedImageRunnersIdArtifactsUrlResponse
+func (c *ClientWithResponses) GetHostedImageRunnersIdArtifactsUrlWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdArtifactsUrlResponse, error) {
+	rsp, err := c.GetHostedImageRunnersIdArtifactsUrl(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHostedImageRunnersIdArtifactsUrlResponse(rsp)
 }
 
 // GetHostedImageRunnersIdLogsUrlWithResponse request returning *GetHostedImageRunnersIdLogsUrlResponse
@@ -1006,6 +1097,32 @@ func ParseGetHostedImageRunnersIdResponse(rsp *http.Response) (*GetHostedImageRu
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest RunnerDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetHostedImageRunnersIdArtifactsUrlResponse parses an HTTP response from a GetHostedImageRunnersIdArtifactsUrlWithResponse call
+func ParseGetHostedImageRunnersIdArtifactsUrlResponse(rsp *http.Response) (*GetHostedImageRunnersIdArtifactsUrlResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHostedImageRunnersIdArtifactsUrlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RunnerArtifactsUrl
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
