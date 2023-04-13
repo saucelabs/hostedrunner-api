@@ -16,6 +16,12 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
 
+// Defines values for RunnerSpecWorkloadType.
+const (
+	Other     RunnerSpecWorkloadType = "other"
+	Webdriver RunnerSpecWorkloadType = "webdriver"
+)
+
 // Auth defines model for Auth.
 type Auth struct {
 	Token string `json:"token"`
@@ -144,7 +150,13 @@ type RunnerSpec struct {
 
 	// Metadata Test-runner metadata, arbitrary key-value pairs.
 	Metadata *RunnerMetadata `json:"metadata,omitempty"`
+
+	// WorkloadType Workload type.
+	WorkloadType *RunnerSpecWorkloadType `json:"workload_type,omitempty"`
 }
+
+// RunnerSpecWorkloadType Workload type.
+type RunnerSpecWorkloadType string
 
 // RunnerStatus defines model for RunnerStatus.
 type RunnerStatus struct {
@@ -160,6 +172,12 @@ type RunnerStatus struct {
 type GetHostedImageRunnersParams struct {
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// DeleteHostedImageRunnersIdParams defines parameters for DeleteHostedImageRunnersId.
+type DeleteHostedImageRunnersIdParams struct {
+	// Force forces deletion
+	Force *bool `form:"force,omitempty" json:"force,omitempty"`
 }
 
 // PostHostedImageRunnersJSONRequestBody defines body for PostHostedImageRunners for application/json ContentType.
@@ -247,7 +265,7 @@ type ClientInterface interface {
 	PostHostedImageRunners(ctx context.Context, body PostHostedImageRunnersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteHostedImageRunnersId request
-	DeleteHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteHostedImageRunnersId(ctx context.Context, id string, params *DeleteHostedImageRunnersIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -301,8 +319,8 @@ func (c *HostedAPIClient) PostHostedImageRunners(ctx context.Context, body PostH
 	return c.Client.Do(req)
 }
 
-func (c *HostedAPIClient) DeleteHostedImageRunnersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteHostedImageRunnersIdRequest(c.Server, id)
+func (c *HostedAPIClient) DeleteHostedImageRunnersId(ctx context.Context, id string, params *DeleteHostedImageRunnersIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteHostedImageRunnersIdRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -477,7 +495,7 @@ func NewPostHostedImageRunnersRequestWithBody(server string, contentType string,
 }
 
 // NewDeleteHostedImageRunnersIdRequest generates requests for DeleteHostedImageRunnersId
-func NewDeleteHostedImageRunnersIdRequest(server string, id string) (*http.Request, error) {
+func NewDeleteHostedImageRunnersIdRequest(server string, id string, params *DeleteHostedImageRunnersIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -501,6 +519,26 @@ func NewDeleteHostedImageRunnersIdRequest(server string, id string) (*http.Reque
 	if err != nil {
 		return nil, err
 	}
+
+	queryValues := queryURL.Query()
+
+	if params.Force != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "force", runtime.ParamLocationQuery, *params.Force); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
 	if err != nil {
@@ -732,7 +770,7 @@ type ClientWithResponsesInterface interface {
 	PostHostedImageRunnersWithResponse(ctx context.Context, body PostHostedImageRunnersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostHostedImageRunnersResponse, error)
 
 	// DeleteHostedImageRunnersId request
-	DeleteHostedImageRunnersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteHostedImageRunnersIdResponse, error)
+	DeleteHostedImageRunnersIdWithResponse(ctx context.Context, id string, params *DeleteHostedImageRunnersIdParams, reqEditors ...RequestEditorFn) (*DeleteHostedImageRunnersIdResponse, error)
 
 	// GetHostedImageRunnersId request
 	GetHostedImageRunnersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetHostedImageRunnersIdResponse, error)
@@ -953,8 +991,8 @@ func (c *ClientWithResponses) PostHostedImageRunnersWithResponse(ctx context.Con
 }
 
 // DeleteHostedImageRunnersIdWithResponse request returning *DeleteHostedImageRunnersIdResponse
-func (c *ClientWithResponses) DeleteHostedImageRunnersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteHostedImageRunnersIdResponse, error) {
-	rsp, err := c.DeleteHostedImageRunnersId(ctx, id, reqEditors...)
+func (c *ClientWithResponses) DeleteHostedImageRunnersIdWithResponse(ctx context.Context, id string, params *DeleteHostedImageRunnersIdParams, reqEditors ...RequestEditorFn) (*DeleteHostedImageRunnersIdResponse, error) {
+	rsp, err := c.DeleteHostedImageRunnersId(ctx, id, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}

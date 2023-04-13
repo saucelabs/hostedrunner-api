@@ -95,6 +95,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: force
+          in: query
+          description: forces deletion
+          schema:
+            type: boolean
+            default: false
       responses:
         '204':
           description: Test-runner is terminated.
@@ -216,6 +222,13 @@ components:
           type: string
           description: Command used to run tests.
           example: python -m pytest tests/integration
+        workload_type:
+          type: string
+          enum:
+            - webdriver
+            - other
+          description: Workload type.
+          example: webdriver
         env:
           type: array
           description: List of environment variables.
@@ -228,12 +241,13 @@ components:
             "$ref": "#/components/schemas/File"
         artifacts:
           type: array
+          maxItems: 10
           description: Test output files.
           items:
             type: string
           example:
-            - /path/inside/container/file1.log
-            - /path/inside/container/file2.log
+            - /workdir/dir1/file.txt
+            - /workdir/dir2/*/*.txt
     File:
       type: object
       description: Test Runner internal file.
