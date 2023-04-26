@@ -196,6 +196,16 @@ components:
           example: saucelabs/image:sha1
         auth:
          $ref: "#/components/schemas/Auth"
+    Tunnel:
+      type: object
+      description: Test-runner tunnel configuration.
+      properties:
+        name:
+          type: string
+          example: my_tunnel
+        owner:
+          type: string
+          example: my_co
     Auth:
       type: object
       required:
@@ -239,6 +249,8 @@ components:
           description: Test Runner container-mounted files.
           items:
             "$ref": "#/components/schemas/File"
+        tunnel:
+          "$ref": "#/components/schemas/Tunnel"
         artifacts:
           type: array
           maxItems: 10
