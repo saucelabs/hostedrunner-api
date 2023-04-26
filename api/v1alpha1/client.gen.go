@@ -151,6 +151,9 @@ type RunnerSpec struct {
 	// Metadata Test-runner metadata, arbitrary key-value pairs.
 	Metadata *RunnerMetadata `json:"metadata,omitempty"`
 
+	// Tunnel Test-runner tunnel configuration.
+	Tunnel *Tunnel `json:"tunnel,omitempty"`
+
 	// WorkloadType Workload type.
 	WorkloadType *RunnerSpecWorkloadType `json:"workload_type,omitempty"`
 }
@@ -166,6 +169,12 @@ type RunnerStatus struct {
 	Status            string  `json:"status"`
 	TerminationReason *string `json:"termination_reason,omitempty"`
 	TerminationTime   *int64  `json:"termination_time,omitempty"`
+}
+
+// Tunnel Test-runner tunnel configuration.
+type Tunnel struct {
+	Name  *string `json:"name,omitempty"`
+	Owner *string `json:"owner,omitempty"`
 }
 
 // GetHostedImageRunnersParams defines parameters for GetHostedImageRunners.
