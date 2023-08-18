@@ -18,8 +18,8 @@ $(LOCALBIN):
 GOLANGCI ?= $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
-GOLANGI_LINT_VERSION ?= v1.52.0
-OAPI_CODEGEN_VERSION ?= "1.12.4"
+GOLANGI_LINT_VERSION ?= v1.54.1
+OAPI_CODEGEN_VERSION ?= "1.13.4"
 
 OAPI_CODEGEN_FOUND := $(shell oapi-codegen --version 2> /dev/null)
 .PHONY: oapi_codegen

@@ -367,6 +367,17 @@ components:
           type: string
         assets_uploaded:
           type: boolean
+        assets:
+          $ref: "#/components/schemas/AssetsStatus"
+    AssetsStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+        reason:
+          type: string
     RunnerDetails:
       type: object
       allOf:
