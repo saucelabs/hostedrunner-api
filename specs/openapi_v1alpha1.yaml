@@ -182,6 +182,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RunnerArtifactsUrl"
+  /hosted/container-registry/authorization-token:
+    post:
+      summary: Get short-living authorization token for container registry
+      tags:
+        - registry
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - registry_url
+              properties:
+                registry_url:
+                  type: string
+                  description: Registry url
+      responses:
+        '200':
+          description: Token to use for container registry.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainerRegistryAuthorizationToken"
+  /hosted/container-registry/{name}/authorization-token:
+    post:
+      summary: Get short-living authorization token for container registry
+      tags:
+        - registry
+      parameters:
+        - name: name
+          in: path
+          description: the registry name.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token to use for container registry.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainerRegistryAuthorizationToken"
 components:
   schemas:
     ContainerSpec:
@@ -195,7 +238,34 @@ components:
           minLength: 3
           example: saucelabs/image:sha1
         auth:
-         $ref: "#/components/schemas/Auth"
+          $ref: "#/components/schemas/Auth"
+    Service:
+      type: object
+      description: Test-runner service specification.
+      required:
+        - name
+        - container
+      properties:
+        name:
+          type: string
+          minLength: 3
+          example: saucelabs/image:sha1
+        container:
+          "$ref": "#/components/schemas/ContainerSpec"
+        entrypoint:
+          type: string
+          description: Command used to run tests.
+          example: python -m pytest tests/integration
+        env:
+          type: array
+          description: List of environment variables.
+          items:
+            "$ref": "#/components/schemas/EnvVar"
+        files:
+          type: array
+          description: Test Runner container-mounted files.
+          items:
+            "$ref": "#/components/schemas/File"
     Tunnel:
       type: object
       description: Test-runner tunnel configuration.
@@ -260,6 +330,11 @@ components:
           example:
             - /workdir/dir1/file.txt
             - /workdir/dir2/*/*.txt
+        services:
+          type: array
+          description: Test Runner service containers.
+          items:
+            "$ref": "#/components/schemas/Service"
     File:
       type: object
       description: Test Runner internal file.
@@ -305,7 +380,6 @@ components:
         - status
         - image
         - creation_time
-        - assets_uploaded
       properties:
         id:
           type: string
@@ -332,9 +406,8 @@ components:
         termination_reason:
           type: string
           description: a code describing why the test terminated
-        assets_uploaded:
-          type: boolean
-          description: a flag indicating assets upload status
+        assets:
+          $ref: "#/components/schemas/AssetsStatus"
     RunnerList:
       type: object
       required:
@@ -351,7 +424,6 @@ components:
         - id
         - status
         - creation_time
-        - assets_uploaded
       properties:
         id:
           type: string
@@ -365,8 +437,6 @@ components:
           format: int64
         termination_reason:
           type: string
-        assets_uploaded:
-          type: boolean
         assets:
           $ref: "#/components/schemas/AssetsStatus"
     AssetsStatus:
@@ -384,8 +454,8 @@ components:
         - $ref: "#/components/schemas/Runner"
         - type: object
           properties:
-              metadata:
-                $ref: "#/components/schemas/RunnerMetadata"
+            metadata:
+              $ref: "#/components/schemas/RunnerMetadata"
     RunnerLogsUrl:
       type: object
       required:
@@ -415,3 +485,12 @@ components:
           type: string
           description: Error message.
           example: missing fields
+    ContainerRegistryAuthorizationToken:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        expires_at:
+          type: string
