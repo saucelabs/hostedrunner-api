@@ -18,14 +18,14 @@ $(LOCALBIN):
 GOLANGCI ?= $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
-GOLANGI_LINT_VERSION ?= v1.54.1
-OAPI_CODEGEN_VERSION ?= "1.13.4"
+GOLANGI_LINT_VERSION ?= v1.59.1
+OAPI_CODEGEN_VERSION ?= v2.3.0
 
 OAPI_CODEGEN_FOUND := $(shell oapi-codegen --version 2> /dev/null)
 .PHONY: oapi_codegen
 oapi_codegen: ## Install oapi-codegen globally
 ifndef OAPI_CODEGEN_FOUND
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v$(OAPI_CODEGEN_VERSION)
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION)
 else
 	echo $(OAPI_CODEGEN_FOUND)
 endif
